@@ -41,3 +41,54 @@ li {
   text-decoration: line-through;
   color: gray;
 }
+
+.status {
+  margin-right: 10px;
+  font-weight: bold;
+  color: green;
+}
+
+#taskList {
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+  overflow: hidden;
+}
+
+#taskList.hide {
+  max-height: 0;
+  opacity: 0;
+}
+
+#toggleListBtn {
+  margin-top: 10px;
+  padding: 8px 16px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#toggleListBtn:hover {
+  background-color: #0056b3;
+}
+.logout-btn {
+  background-color: #ff4d4d;
+  border: none;
+  padding: 8px 14px;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  float: right;
+  margin-bottom: 15px;
+  transition: background 0.3s;
+}
+
+.logout-btn:hover {
+  background-color: #cc0000;
+}
+
+img{
+  width: 300px;
+  height: 100px;
+}

@@ -1,66 +1,133 @@
+//script.js
+// ----------------- DOM Elements -----------------
+const toggleListBtn = document.getElementById("toggleListBtn");
 const taskList = document.getElementById("taskList");
 const taskInput = document.getElementById("taskInput");
 const addBtn = document.getElementById("addBtn");
+const logoutBtn = document.getElementById("logoutBtn");
 
-const API_URL = "http://localhost:3000/tasks";
+// ----------------- Constants -----------------
+const API_URL = "/tasks";
+const token = localStorage.getItem("token");
 
-// Add task when the Add button is clicked
+// ----------------- Redirect if not logged in -----------------
+if (!token) {
+  window.location.href = "login.html";
+}
+
+// ----------------- Add Task Events -----------------
 addBtn.addEventListener("click", addTask);
 
-// Add task when Enter key is pressed
 taskInput.addEventListener("keydown", function (event) {
   if (event.key === "Enter") {
-    event.preventDefault(); // prevents accidental form submit or page refresh
+    event.preventDefault();
     addTask();
   }
 });
 
+//logout button event
+logoutBtn.addEventListener("click", () => {
+  localStorage.removeItem("token");
+  window.location.href = "login.html";
+});
 
+// ----------------- Load Tasks -----------------
 async function loadTasks() {
-  const res = await fetch(API_URL);
+  const res = await fetch(API_URL, {
+    headers: { "Authorization": token }
+  });
+
+  if (!res.ok) {
+    alert("Session expired. Please login again.");
+    localStorage.removeItem("token");
+    window.location.href = "login.html";
+    return;
+  }
+
   const tasks = await res.json();
   taskList.innerHTML = "";
   tasks.forEach((t) => addTaskToUI(t));
 }
 
+// ----------------- Toggle Task List -----------------
+let isListVisible = true;
+
+toggleListBtn.addEventListener("click", () => {
+  isListVisible = !isListVisible;
+  taskList.style.display = isListVisible ? "block" : "none";
+  toggleListBtn.textContent = isListVisible ? "Hide Task List" : "Show Task List";
+});
+
+// ----------------- Add Task to UI -----------------
 function addTaskToUI(task) {
   const li = document.createElement("li");
+
   li.innerHTML = `
-    <span class="${task.completed ? 'done' : ''}" onclick="toggleTask(${task.id}, ${!task.completed})">${task.title}</span>
+    <span class="${task.completed ? 'done' : ''}">
+      ${task.title}
+    </span>
+
+    ${
+      task.completed
+        ? `<span class="status">✅ Completed</span>`
+        : `<button onclick="toggleTask(${task.id}, true)">Mark Complete</button>`
+    }
+
     <button onclick="deleteTask(${task.id})">🗑</button>
   `;
+
   taskList.appendChild(li);
 }
 
-// ✅ Unified addTask function (used by both click & Enter)
+// ----------------- Add Task -----------------
 async function addTask() {
   const title = taskInput.value.trim();
   if (!title) return;
+
   await fetch(API_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title }),
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": token
+    },
+    body: JSON.stringify({ title })
   });
+
   taskInput.value = "";
   loadTasks();
 }
 
-
+// ----------------- Mark Complete / Toggle Task -----------------
 async function toggleTask(id, completed) {
-  const res = await fetch(`${API_URL}/${id}`);
-  const task = await res.json();
+  const res = await fetch(API_URL, {
+    headers: { "Authorization": token }
+  });
+
+  const tasks = await res.json();
+  const task = tasks.find(t => t.id === id);
 
   await fetch(`${API_URL}/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title: task.title, completed }),
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": token
+    },
+    body: JSON.stringify({ title: task.title, completed })
   });
+
   loadTasks();
 }
 
+// ----------------- Delete Task -----------------
 async function deleteTask(id) {
-  await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+  await fetch(`${API_URL}/${id}`, {
+    method: "DELETE",
+    headers: { "Authorization": token }
+  });
+
   loadTasks();
 }
 
+
+// ----------------- Initial Load -----------------
 loadTasks();
