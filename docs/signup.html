@@ -1,0 +1,37 @@
+<!--signup.html-->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Signup</title>
+</head>
+<body>
+  <h1>Signup</h1>
+  <input id="username" placeholder="Username"><br>
+  <input id="password" type="password" placeholder="Password"><br>
+  <button id="signupBtn">Create Account</button>
+
+  <p>Already have an account? <a href="login.html">Login</a></p>
+
+<script>
+document.getElementById("signupBtn").onclick = async () => {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  const res = await fetch("/signup", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password })
+  });
+
+  const data = await res.json();
+
+  if (res.ok) {
+    alert("Account created! Please login.");
+    window.location.href = "login.html";
+  } else {
+    alert(data.message);
+  }
+};
+</script>
+</body>
+</html>
