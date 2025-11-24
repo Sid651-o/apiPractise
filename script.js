@@ -12,7 +12,7 @@ const token = localStorage.getItem("token");
 
 // ----------------- Redirect if not logged in -----------------
 if (!token) {
-  window.location.href = "login.html";
+  window.location.href = "https://sid651-o.github.io/login.html";
 }
 
 // ----------------- Add Task Events -----------------
@@ -28,7 +28,7 @@ taskInput.addEventListener("keydown", function (event) {
 //logout button event
 logoutBtn.addEventListener("click", () => {
   localStorage.removeItem("token");
-  window.location.href = "login.html";
+  window.location.href = "https://sid651-o.github.io/login.html";
 });
 
 // ----------------- Load Tasks -----------------
@@ -40,7 +40,7 @@ async function loadTasks() {
   if (!res.ok) {
     alert("Session expired. Please login again.");
     localStorage.removeItem("token");
-    window.location.href = "login.html";
+    window.location.href = "https://sid651-o.github.io/login.html";
     return;
   }
 
